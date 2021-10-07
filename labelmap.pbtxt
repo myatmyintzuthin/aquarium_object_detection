@@ -1,28 +1,28 @@
 item {
-    name: 'fish'
-    id: 1
+  name: "fish"
+  id: 1
 }
 item {
-    name: 'jellyfish'
-    id: 2
+  name: "jellyfish"
+  id: 2
 }
 item {
-    name: 'penguin'
-    id: 3
+  name: "penguin"
+  id: 3
 }
 item {
-    name: 'shark'
-    id: 4
+  name: "shark"
+  id: 4
 }
 item {
-    name: 'puffin'
-    id: 5
+  name: "puffin"
+  id: 5
 }
 item {
-    name: 'stingray'
-    id: 6
+  name: "stingray"
+  id: 6
 }
 item {
-    name: 'starfish'
-    id: 7
+  name: "starfish"
+  id: 7
 }
