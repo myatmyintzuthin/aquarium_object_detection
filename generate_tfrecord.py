@@ -1,109 +1,134 @@
-#based on https://github.com/datitran/raccoon_dataset/blob/master/generate_tfrecord.py
+'''
+Reference repo: https://github.com/hugozanini/object-detection/blob/master/generate_tf_record.py
+It's necessary to install the tensorflow object detection first
+'''
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
-
-import os
-import io
+import tensorflow as tf
 import pandas as pd
-
-from tensorflow.python.framework.versions import VERSION
-if VERSION >= "2.0.0a0":
-    import tensorflow.compat.v1 as tf
-else:
-    import tensorflow as tf
+import argparse
+import logging
+import io
+import os
 
 from PIL import Image
 from object_detection.utils import dataset_util
 from collections import namedtuple, OrderedDict
 
-flags = tf.app.flags
-flags.DEFINE_string('csv_input', '', 'Path to the CSV input')
-flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
-flags.DEFINE_string('image_dir', '', 'Path to images')
-FLAGS = flags.FLAGS
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+
+class TFRecord:
+    def __init__(self, labelmap_file) -> None:
+        f = open(labelmap_file, "r")
+        labelmap = f.read()
+        self.class_names = self.init_names(labelmap)
+
+    def init_names(self, labelmap) -> dict:
+        items = labelmap.split('item')[1:]
+        items_dict = {}
+        for item in items:
+            name = str(item.split('name')[1].split('"')[1])
+            name_id = int(item.split('name')[1].split('id')[1].\
+                                                split(": ")[1].split('}')[0])
+
+            items_dict[name] = name_id
+        return items_dict
+
+    def class_text_to_int(self, row_label) -> int:
+        if self.class_names[row_label] is not None:
+            return self.class_names[row_label]
+        else:
+            None
+
+    def split(self, df, group):
+        data = namedtuple('data', ['filename', 'object'])
+        gb = df.groupby(group)
+        return [data(filename, gb.get_group(x)) for filename, x in \
+                                            zip(gb.groups.keys(), gb.groups)]
 
 
-def class_text_to_int(row_label):
-    if row_label == 'fish':
-        return 1
-    elif row_label == 'jellyfish':
-        return 2
-    elif row_label == 'penguin':
-        return 3
-    elif row_label == 'shark':
-        return 4
-    elif row_label == 'puffin':
-        return 5
-    elif row_label == 'stingray':
-        return 6
-    elif row_label == 'starfish':
-        return 7
-    else:
-        return None
+    def create_tf(self, group, path):
+        with tf.io.gfile.GFile(os.path.join(path, '{}'\
+                                        .format(group.filename)), 'rb') as fid:
+            encoded_jpg = fid.read()
+        encoded_jpg_io = io.BytesIO(encoded_jpg)
+        image = Image.open(encoded_jpg_io)
+        width, height = image.size
+
+        filename = group.filename.encode('utf8')
+        image_format = b'jpg'
+        xmins = []
+        xmaxs = []
+        ymins = []
+        ymaxs = []
+        classes_text = []
+        classes = []
+
+        for index, row in group.object.iterrows():
+            xmins.append(row['xmin'] / width)
+            xmaxs.append(row['xmax'] / width)
+            ymins.append(row['ymin'] / height)
+            ymaxs.append(row['ymax'] / height)
+            classes_text.append(row['class'].encode('utf8'))
+            classes.append(self.class_text_to_int(row['class']))
+
+        tf_sample = tf.train.Example(features=tf.train.Features(feature={
+            'image/height': dataset_util.int64_feature(height),
+            'image/width': dataset_util.int64_feature(width),
+            'image/filename': dataset_util.bytes_feature(filename),
+            'image/source_id': dataset_util.bytes_feature(filename),
+            'image/encoded': dataset_util.bytes_feature(encoded_jpg),
+            'image/format': dataset_util.bytes_feature(image_format),
+            'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
+            'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
+            'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
+            'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
+            'image/object/class/text':\
+                                dataset_util.bytes_list_feature(classes_text),
+            'image/object/class/label':\
+                                    dataset_util.int64_list_feature(classes),
+        }))
+        return tf_sample
+
+    def generate(self, output_path, image_dir, csv_input) -> None:
+        writer = tf.io.TFRecordWriter(output_path)
+        path = os.path.join(image_dir)
+        data = pd.read_csv(csv_input)
+        grouped = self.split(data, 'filename')
+
+        for group in grouped:
+            try:
+              tf_sample = self.create_tf(group, path)
+              writer.write(tf_sample.SerializeToString())
+            except:
+              continue
+        logging.info('Successfully created the TFRecords: {}'.format(output_path))
 
 
-def split(df, group):
-    data = namedtuple('data', ['filename', 'object'])
-    gb = df.groupby(group)
-    return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate tf record")
+    parser.add_argument('-l', '--labelmap',
+                        help = 'Labelmap path',
+                        default = 'labelmap.txt',
+                        dest = 'labelmap_file'
+                        )
+    parser.add_argument('-o', '--output',
+                    help = 'Output path',
+                    default = 'train.record',
+                    dest = 'output_path'
+                    )
 
+    parser.add_argument('-i', '--imagesdir',
+                    help = 'Images directory',
+                    default = 'dataset/images',
+                    dest = 'image_dir'
+                    )
 
-def create_tf_example(group, path):
-    with tf.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
-        encoded_jpg = fid.read()
-    encoded_jpg_io = io.BytesIO(encoded_jpg)
-    image = Image.open(encoded_jpg_io)
-    width, height = image.size
+    parser.add_argument('-csv', '--csvinput',
+                    help = 'CSV with images names',
+                    default = 'dataset/labels.csv',
+                    dest = 'csv_input'
+                    )
+    args = parser.parse_args()
 
-    filename = group.filename.encode('utf8')
-    image_format = b'jpg'
-    xmins = []
-    xmaxs = []
-    ymins = []
-    ymaxs = []
-    classes_text = []
-    classes = []
-
-    for index, row in group.object.iterrows():
-        xmins.append(row['xmin'] / width)
-        xmaxs.append(row['xmax'] / width)
-        ymins.append(row['ymin'] / height)
-        ymaxs.append(row['ymax'] / height)
-        classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_text_to_int(row['class']))
-
-    tf_example = tf.train.Example(features=tf.train.Features(feature={
-        'image/height': dataset_util.int64_feature(height),
-        'image/width': dataset_util.int64_feature(width),
-        'image/filename': dataset_util.bytes_feature(filename),
-        'image/source_id': dataset_util.bytes_feature(filename),
-        'image/encoded': dataset_util.bytes_feature(encoded_jpg),
-        'image/format': dataset_util.bytes_feature(image_format),
-        'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
-        'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
-        'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
-        'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
-        'image/object/class/text': dataset_util.bytes_list_feature(classes_text),
-        'image/object/class/label': dataset_util.int64_list_feature(classes),
-    }))
-    return tf_example
-
-
-def main(_):
-    writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
-    path = os.path.join(FLAGS.image_dir)
-    examples = pd.read_csv(FLAGS.csv_input)
-    grouped = split(examples, 'filename')
-    for group in grouped:
-        tf_example = create_tf_example(group, path)
-        writer.write(tf_example.SerializeToString())
-
-    writer.close()
-    output_path = os.path.join(os.getcwd(), FLAGS.output_path)
-    print('Successfully created the TFRecords: {}'.format(output_path))
-
-
-if __name__ == '__main__':
-    tf.app.run()
+    tf_record = TFRecord(args.labelmap_file)
+    tf_record.generate(args.output_path, args.image_dir, args.csv_input)
