@@ -35,11 +35,11 @@ def class_text_to_int(row_label):
     elif row_label == 'shark':
         return 4
     elif row_label == 'puffin':
-        return 4
+        return 5
     elif row_label == 'stingray':
-        return 4
+        return 6
     elif row_label == 'starfish':
-        return 4
+        return 7
     else:
         return None
 
