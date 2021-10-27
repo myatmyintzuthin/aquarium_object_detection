@@ -1,1 +1,2 @@
-# Aquarium Object Detection (TensorFlow object detection API) :tropical_fish:
+# Aquarium Object Detection \ 
+# (with TensorFlow Object Detection API) :tropical_fish:
