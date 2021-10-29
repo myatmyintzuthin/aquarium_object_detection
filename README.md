@@ -48,8 +48,8 @@ DONE (t=0.19s).
 ![tensorboard.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/tensorboard.PNG)
 ------
 #### References
-[Custom object detection in the browser using TensorFlow.js by Hugo Zanini](https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html)
-[TensorFlow Object Detection API Tutorial](https://readthedocs.org/projects/tensorflow-object-detection-api-tutorial/)
+[Custom object detection in the browser using TensorFlow.js by Hugo Zanini](https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html) \
+[TensorFlow Object Detection API Tutorial](https://readthedocs.org/projects/tensorflow-object-detection-api-tutorial/) \
 [TensorFlow 2 Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
 
  
