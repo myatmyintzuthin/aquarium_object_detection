@@ -7,7 +7,7 @@ Underwater Health Monitoring is an essential way to prevent extinction of sea an
 ![sample2.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/sample2.PNG)
 ------
 #### Dataset
-The [Aquarium Object Detection 4817 bounding boxes dataset](https://www.kaggle.com/paulrohan2020/aquarium-object-detection-4817-bounding-boxes) is collected by Roboflow team from two aquariums in the United States: The Henry Doorly Zoo in Omaha (October 16, 2020) and the National Aquarium in Baltimore (November 14, 2020). The dataset consists of 638 images splitted into train, test and validation data.
+The [Aquarium Object Detection Dataset](https://public.roboflow.com/object-detection/aquarium) is collected by Brad Dwyer(Roboflow team) from two aquariums in the United States: The Henry Doorly Zoo in Omaha (October 16, 2020) and the National Aquarium in Baltimore (November 14, 2020). The dataset consists of 638 images splitted into train, test and validation data.
 
 ![train1.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/train1.jpg)
 ------
