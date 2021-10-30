@@ -1,13 +1,15 @@
 # Aquarium Object Detection :tropical_fish:
-[![TensorFlow 2.6](https://img.shields.io/badge/TensorFlow-2.6-FF6F00?logo=tensorflow)](https://github.com/tensorflow/tensorflow/releases/tag/v2.6.0)
+[![TensorFlow 2.6](https://img.shields.io/badge/TensorFlow-2.6-FF6F00?logo=tensorflow)](https://github.com/tensorflow/tensorflow/releases/tag/v2.6.0) 
+
 Underwater Health Monitoring is an essential way to prevent extinction of sea animals and coral reef. In this repository, we will build an aquarium object detection system using Deep Learning and Computer Vision. 
 
-![Sample2.jpg](https://raw.githubusercontent.com/NyanSwanAung/Pothole-Detection-using-MaskRCNN/main/assets/sample2.jpg)
+![sample1.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/sample1.PNG)
+![sample2.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/sample2.PNG)
 ------
 #### Dataset
-The [Aquarium Object Detection 4817 bounding boxes dataset](https://www.kaggle.com/paulrohan2020/aquarium-object-detection-4817-bounding-boxes) is collected by Roboflow team from two aquariums in the United States: The Henry Doorly Zoo in Omaha (October 16, 2020) and the National Aquarium in Baltimore (November 14, 2020). The dataset consists of 638 images splitted into train, test and validation data.
+The [Aquarium Object Detection Dataset](https://public.roboflow.com/object-detection/aquarium) is collected by Brad Dwyer(Roboflow team) from two aquariums in the United States: The Henry Doorly Zoo in Omaha (October 16, 2020) and the National Aquarium in Baltimore (November 14, 2020). The dataset consists of 638 images splitted into train, test and validation data.
 
-![Sample2.jpg](https://raw.githubusercontent.com/NyanSwanAung/Pothole-Detection-using-MaskRCNN/main/assets/sample2.jpg)
+![train1.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/train1.jpg)
 ------
 #### Model 
 We will be using EfficientDet D0 model from [TensorFlow 2 Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md). They provide a collection of detection models pre-trained on the [COCO 2017 dataset](https://cocodataset.org/).
@@ -43,11 +45,11 @@ DONE (t=0.19s).
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.554
 ```
 #### Tensor Board Metrics
-![Sample2.jpg](https://raw.githubusercontent.com/NyanSwanAung/Pothole-Detection-using-MaskRCNN/main/assets/sample2.jpg)
+![tensorboard.jpg](https://github.com/myatmyintzuthin/aquarium_object_detection/blob/main/assets/tensorboard.PNG)
 ------
 #### References
-[Custom object detection in the browser using TensorFlow.js by Hugo Zanini](https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html)
-[TensorFlow Object Detection API Tutorial](https://readthedocs.org/projects/tensorflow-object-detection-api-tutorial/)
+[Custom object detection in the browser using TensorFlow.js by Hugo Zanini](https://blog.tensorflow.org/2021/01/custom-object-detection-in-browser.html) \
+[TensorFlow Object Detection API Tutorial](https://readthedocs.org/projects/tensorflow-object-detection-api-tutorial/) \
 [TensorFlow 2 Detection Model Zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md)
 
  
